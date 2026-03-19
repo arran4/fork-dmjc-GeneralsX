@@ -404,8 +404,11 @@ void FFmpegVideoStream::update()
 	// first unprocessed buffer (OpenAL 1.1 spec §4.3.9), which causes
 	// effective silence when invoked every game frame.
 	OpenALAudioStream* audioStream = (OpenALAudioStream*)TheAudio->getHandleForBink();
-	if (!audioStream->isPlaying()) {
-		audioStream->play();
+	if (audioStream) {
+		if (!audioStream->isPlaying()) {
+			audioStream->play();
+		}
+		audioStream->update();
 	}
 #endif
 	//BinkWait( m_handle );
