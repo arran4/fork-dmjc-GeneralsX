@@ -187,6 +187,14 @@ set(GAMEENGINEDEVICE_SRC
 #    Source/Win32Device/GameClient/Win32Mouse.cpp
 )
 
+if(SAGE_USE_OPENAL)
+    list(APPEND GAMEENGINEDEVICE_SRC
+        Source/OpenALAudioDevice/OpenALAudioManager.cpp
+        Source/OpenALAudioDevice/OpenALAudioStream.cpp
+        Source/OpenALAudioDevice/OpenALAudioCache.cpp
+    )
+endif()
+
 # GeneralsX @build BenderAI 13/02/2026 Platform-specific file implementations
 if(WIN32)
     # Windows-specific files (use Windows API for filesystem)
@@ -253,6 +261,9 @@ if(SAGE_USE_OPENAL)
         target_include_directories(corei_gameenginedevice_public INTERFACE ${OPENAL_INCLUDE_DIR})
         target_link_libraries(corei_gameenginedevice_public INTERFACE ${OPENAL_LIBRARY})
     endif()
+
+    # Private include path for OpenALAudioCache.h (local to Source/OpenALAudioDevice/)
+    target_include_directories(corei_gameenginedevice_private INTERFACE Source/OpenALAudioDevice)
 endif()
 
 if(RTS_BUILD_OPTION_FFMPEG)

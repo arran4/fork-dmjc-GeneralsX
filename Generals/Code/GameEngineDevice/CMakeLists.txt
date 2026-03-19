@@ -199,9 +199,6 @@ else()
     # Reuses GeneralsMD's OpenAL + FFmpeg implementation directly, sharing the same audio engine.
     if(SAGE_USE_OPENAL)
         list(APPEND GAMEENGINEDEVICE_SRC
-            ${CMAKE_SOURCE_DIR}/GeneralsMD/Code/GameEngineDevice/Source/OpenALAudioDevice/OpenALAudioManager.cpp
-            ${CMAKE_SOURCE_DIR}/GeneralsMD/Code/GameEngineDevice/Source/OpenALAudioDevice/OpenALAudioStream.cpp
-            ${CMAKE_SOURCE_DIR}/GeneralsMD/Code/GameEngineDevice/Source/OpenALAudioDevice/OpenALAudioCache.cpp
             ${CMAKE_SOURCE_DIR}/GeneralsMD/Code/GameEngineDevice/Source/VideoDevice/FFmpeg/FFmpegFile.cpp
         )
     endif()
@@ -251,10 +248,6 @@ if(SAGE_USE_OPENAL)
     # GeneralsMD headers for OpenALAudioDevice (public: OpenALAudioManager.h, FFmpegFile.h)
     target_include_directories(g_gameenginedevice PUBLIC
         ${CMAKE_SOURCE_DIR}/GeneralsMD/Code/GameEngineDevice/Include
-    )
-    # Private: OpenALAudioCache.h lives alongside the source
-    target_include_directories(g_gameenginedevice PRIVATE
-        ${CMAKE_SOURCE_DIR}/GeneralsMD/Code/GameEngineDevice/Source/OpenALAudioDevice
     )
 endif()
 

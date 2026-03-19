@@ -213,9 +213,6 @@ else()
         # OpenAL audio + FFmpeg decoding (Phase 2 - fighter19 port)
         # GeneralsX @feature BenderAI 21/02/2026 Full OpenAL implementation
         list(APPEND GAMEENGINEDEVICE_SRC
-            Source/OpenALAudioDevice/OpenALAudioManager.cpp
-            Source/OpenALAudioDevice/OpenALAudioStream.cpp
-            Source/OpenALAudioDevice/OpenALAudioCache.cpp
             Source/VideoDevice/FFmpeg/FFmpegFile.cpp
         )
     else()
@@ -269,7 +266,6 @@ if(SAGE_USE_OPENAL)
     target_link_libraries(z_gameenginedevice PUBLIC OpenAL::OpenAL)
 
     # Private include path for OpenALAudioCache.h (local to Source/OpenALAudioDevice/)
-    target_include_directories(z_gameenginedevice PRIVATE Source/OpenALAudioDevice)
 endif()
 
 # Phase 3: Video playback with FFmpeg (configured by Core/GameEngineDevice when RTS_BUILD_OPTION_FFMPEG=ON)
