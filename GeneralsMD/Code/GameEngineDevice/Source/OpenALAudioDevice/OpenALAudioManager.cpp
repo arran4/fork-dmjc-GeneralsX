@@ -534,6 +534,11 @@ void OpenALAudioManager::update()
 	processPlayingList();
 	processFadingList();
 	processStoppedList();
+
+	if (m_binkAudio)
+	{
+		m_binkAudio->update();
+	}
 }
 
 //-------------------------------------------------------------------------------------------------
