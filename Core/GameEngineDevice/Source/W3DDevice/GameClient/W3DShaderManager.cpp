@@ -3614,34 +3614,68 @@ Int FlatTerrainShaderPixelShader::init()
 				(D3DVSD_END())
 			};
 
+			// GeneralsX @bugfix BenderAI 13/02/2026 - Graceful fallback when pixel shader files don't exist
+			// Try to load pixel shaders, but don't fail if files are missing - just use 2-stage fallback
+			Bool pixelShadersAvailable = TRUE;
+
 			//base version which doesn't apply any noise textures.
 			HRESULT hr = W3DShaderManager::LoadAndCreateD3DShader("shaders\\fterrain.pso", &Declaration[0], 0, false, &m_dwBasePixelShader);
 			if (FAILED(hr))
-				return FALSE;
+			{
+				DEBUG_LOG(("W3DShaderManager: fterrain.pso not found, using 2-stage fallback"));
+				pixelShadersAvailable = FALSE;
+			}
 
 			//base version which doesn't apply any shroud textures.
-			hr = W3DShaderManager::LoadAndCreateD3DShader("shaders\\fterrain0.pso", &Declaration[0], 0, false, &m_dwBase0PixelShader);
-			if (FAILED(hr))
-				return FALSE;
+			if (pixelShadersAvailable)
+			{
+				hr = W3DShaderManager::LoadAndCreateD3DShader("shaders\\fterrain0.pso", &Declaration[0], 0, false, &m_dwBase0PixelShader);
+				if (FAILED(hr))
+				{
+					DEBUG_LOG(("W3DShaderManager: fterrain0.pso not found, using 2-stage fallback"));
+					pixelShadersAvailable = FALSE;
+				}
+			}
 
 			//version which blends 1 noise texture.
-			hr = W3DShaderManager::LoadAndCreateD3DShader("shaders\\fterrainnoise.pso", &Declaration[0], 0, false, &m_dwBaseNoise1PixelShader);
-			if (FAILED(hr))
-				return FALSE;
+			if (pixelShadersAvailable)
+			{
+				hr = W3DShaderManager::LoadAndCreateD3DShader("shaders\\fterrainnoise.pso", &Declaration[0], 0, false, &m_dwBaseNoise1PixelShader);
+				if (FAILED(hr))
+				{
+					DEBUG_LOG(("W3DShaderManager: fterrainnoise.pso not found, using 2-stage fallback"));
+					pixelShadersAvailable = FALSE;
+				}
+			}
 
 			//version which blends 2 noise textures.
-			hr = W3DShaderManager::LoadAndCreateD3DShader("shaders\\fterrainnoise2.pso", &Declaration[0], 0, false, &m_dwBaseNoise2PixelShader);
-			if (FAILED(hr))
-				return FALSE;
+			if (pixelShadersAvailable)
+			{
+				hr = W3DShaderManager::LoadAndCreateD3DShader("shaders\\fterrainnoise2.pso", &Declaration[0], 0, false, &m_dwBaseNoise2PixelShader);
+				if (FAILED(hr))
+				{
+					DEBUG_LOG(("W3DShaderManager: fterrainnoise2.pso not found, using 2-stage fallback"));
+					pixelShadersAvailable = FALSE;
+				}
+			}
 
-			W3DShaders[W3DShaderManager::ST_FLAT_TERRAIN_BASE]=&flatTerrainShaderPixelShader;
-			W3DShaders[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE1]=&flatTerrainShaderPixelShader;
-			W3DShaders[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE2]=&flatTerrainShaderPixelShader;
-			W3DShaders[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE12]=&flatTerrainShaderPixelShader;
-			W3DShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN_BASE]=1;
-			W3DShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE1]=1;
-			W3DShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE2]=1;
-			W3DShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE12]=1;
+			// Only set pixel shader mode if ALL shaders loaded successfully
+			if (pixelShadersAvailable)
+			{
+				W3DShaders[W3DShaderManager::ST_FLAT_TERRAIN_BASE]=&flatTerrainShaderPixelShader;
+				W3DShaders[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE1]=&flatTerrainShaderPixelShader;
+				W3DShaders[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE2]=&flatTerrainShaderPixelShader;
+				W3DShaders[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE12]=&flatTerrainShaderPixelShader;
+				W3DShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN_BASE]=1;
+				W3DShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE1]=1;
+				W3DShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE2]=1;
+				W3DShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN_BASE_NOISE12]=1;
+				DEBUG_LOG(("W3DShaderManager: Using pixel shader path for flat terrain"));
+			}
+			else
+			{
+				DEBUG_LOG(("W3DShaderManager: Falling back to 2-stage shader for flat terrain (pixel shaders unavailable)"));
+			}
 			return TRUE;
 		}
 	}
